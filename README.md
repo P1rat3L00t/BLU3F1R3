@@ -247,6 +247,7 @@ Set-Service Spooler -StartupType Disabled
 * [Crow Security – DLL Injection Primer](https://www.crow.rip/crows-nest/mal/dev/inject/dll-injection)
 * [Wikipedia – Fileless Malware](https://en.wikipedia.org/wiki/Fileless_malware)
 * [MITRE ATT\&CK T1055.001](https://attack.mitre.org/techniques/T1055/001/)
+* [VulnHub](https://www.vulnhub.com/resources/)
 
 
 
