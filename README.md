@@ -8,7 +8,8 @@
 
 ---
 
-![NSFW-Ransomware Simulation](https://github.com/user-attachments/assets/0a7b0119-2b11-49f1-93af-4fae2e6517bc)
+![v5dlzdmvvy641](https://github.com/user-attachments/assets/f30b3793-1286-4eac-82c1-67d8e209ceed)
+
 
 ---
 
