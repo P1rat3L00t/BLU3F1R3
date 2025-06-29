@@ -82,6 +82,9 @@
 
 ---
 
+![IMG_20250407_055303_902](https://github.com/user-attachments/assets/fc24fe88-0571-452b-8bb0-e7f5ad9da8e1)
+
+
 ## Attack Simulation (PowerShell)
 
 ```powershell
